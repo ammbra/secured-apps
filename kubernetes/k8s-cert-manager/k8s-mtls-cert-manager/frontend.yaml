@@ -68,7 +68,7 @@ spec:
             successThreshold: 1
             timeoutSeconds: 10
           volumeMounts:
-            - name: files-volume
+            - name: tls-volume
               mountPath: "/tls"
       volumes:
         - name: files-volume

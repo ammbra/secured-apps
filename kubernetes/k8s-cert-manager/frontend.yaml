@@ -68,15 +68,12 @@ spec:
             successThreshold: 1
             timeoutSeconds: 10
           volumeMounts:
-            - name: tls-volume
-              mountPath: "/tls"
+          - name: tls-volume
+            mountPath: "/tls"
       volumes:
-        - name: files-volume
-          persistentVolumeClaim:
-            claimName: upload-claim-frontend
-        - name: tls-volume
-          secret:
-            secretName: frontend-tls
+      - name: tls-volume
+        secret:
+          secretName: frontend-tls
 ---
 apiVersion: v1
 kind: Service

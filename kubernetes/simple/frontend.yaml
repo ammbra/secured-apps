@@ -58,11 +58,11 @@ spec:
             successThreshold: 1
             timeoutSeconds: 10
           volumeMounts:
-            - name: files-volume
-              mountPath: "/tls"
+          - name: files-volume
+            mountPath: "/tls"
       volumes:
-        - name: files-volume
-          persistentVolumeClaim:
+      - name: files-volume
+        persistentVolumeClaim:
             claimName: upload-claim-frontend
 ---
 apiVersion: v1

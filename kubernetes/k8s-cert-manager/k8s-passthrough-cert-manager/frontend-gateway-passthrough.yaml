@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: frontend-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "frontend.mycompany.com"
+      tls:
+        mode: PASSTHROUGH
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-vs
+spec:
+  hosts:
+    - "frontend.mycompany.com"
+  gateways:
+    - frontend-gateway
+  tls:
+    - route:
+        - destination:
+            host: frontend
+            port:
+              number: 443
+          weight: 100
+      match:
+        - port: 443
+          sniHosts:
+            - "client.examplecompany.com"

@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helidon-examples-todo-backend
+  labels:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      version: 1.0.0-SNAPSHOT
+      app: helidon-examples-todo-backend
+      app.kubernetes.io/name: helidon-examples-todo-backend
+  template:
+    metadata:
+      labels:
+        version: 1.0.0-SNAPSHOT
+        app: helidon-examples-todo-backend
+        app.kubernetes.io/name: helidon-examples-todo-backend
+    spec:
+      containers:
+      - name: helidon-examples-todo-backend
+        image: ghcr.io/ammbra/backend:1.0.0-SNAPSHOT
+        imagePullPolicy: Always
+        env:
+          - name: server.tls.private-key.keystore.passphrase
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: back-jks-password-secret
+          - name: server.tls.private-key.truststore.passphrase
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: back-pkcs12-password-secret
+        ports:
+        - containerPort: 8854
+        volumeMounts:
+        - name: config-volume
+          mountPath: /conf
+        - name: tls-volume
+          mountPath: "/tls"
+        readinessProbe:
+          failureThreshold: 3
+          exec:
+            command:
+              - ls
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        livenessProbe:
+          failureThreshold: 3
+          exec:
+            command:
+              - ls
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: backend-app-config
+      - name: tls-volume
+        secret:
+          secretName: backend-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+  name: helidon-examples-todo-backend
+spec:
+  ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8854
+  selector:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+  type: LoadBalancer

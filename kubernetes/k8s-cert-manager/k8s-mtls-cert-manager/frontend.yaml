@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2023-04-24 - 20:48:21 +0000
+  labels:
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    app.kubernetes.io/name: frontend
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+      app.kubernetes.io/name: frontend
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/build-timestamp: 2023-04-24 - 20:48:21 +0000
+      labels:
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+        app.kubernetes.io/name: frontend
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: quarkus.http.ssl.certificate.key-store-file
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: front-jks-password-secret
+            - name: quarkus.http.ssl.certificate.trust-store-file
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: front-pkcs12-password-secret
+          envFrom:
+            - configMapRef:
+                name: frontend-app-config
+          image: ghcr.io/ammbra/frontend:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/live
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: frontend
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/ready
+              port: 8443
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+          volumeMounts:
+            - name: files-volume
+              mountPath: "/tls"
+      volumes:
+        - name: files-volume
+          persistentVolumeClaim:
+            claimName: upload-claim-frontend
+        - name: tls-volume
+          secret:
+            secretName: frontend-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2023-04-24 - 20:48:21 +0000
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: frontend
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: LoadBalancer

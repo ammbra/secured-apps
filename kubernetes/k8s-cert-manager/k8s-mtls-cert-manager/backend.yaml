@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helidon-examples-todo-backend
+  labels:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      version: 1.0.0-SNAPSHOT
+      app: helidon-examples-todo-backend
+      app.kubernetes.io/name: helidon-examples-todo-backend
+  template:
+    metadata:
+      labels:
+        version: 1.0.0-SNAPSHOT
+        app: helidon-examples-todo-backend
+        app.kubernetes.io/name: helidon-examples-todo-backend
+    spec:
+      containers:
+      - name: helidon-examples-todo-backend
+        image: ghcr.io/ammbra/backend:1.0.0-SNAPSHOT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8854
+        volumeMounts:
+        - name: config-volume
+          mountPath: /conf
+        readinessProbe:
+          failureThreshold: 3
+          exec:
+            command:
+              - ls
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+        livenessProbe:
+          failureThreshold: 3
+          exec:
+            command:
+              - ls
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 10
+      volumes:
+      - name: config-volume
+        configMap:
+          name: backend-app-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+  name: helidon-examples-todo-backend
+spec:
+  ports:
+    - name: https
+      port: 80
+      protocol: TCP
+      targetPort: 8854
+  selector:
+    version: 1.0.0-SNAPSHOT
+    app: helidon-examples-todo-backend
+    app.kubernetes.io/name: helidon-examples-todo-backend
+  type: LoadBalancer

@@ -1,0 +1,37 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: helidon-examples-todo-cassandra
+  labels:
+    app.kubernetes.io/name: helidon-examples-todo-cassandra
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: helidon-examples-todo-cassandra
+  ports:
+    - name: http
+      port: 9042
+      targetPort: 9042
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helidon-examples-todo-cassandra
+  labels:
+    app.kubernetes.io/name: helidon-examples-todo-cassandra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: helidon-examples-todo-cassandra
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: helidon-examples-todo-cassandra
+    spec:
+      containers:
+        - name: todo-cassandra-container
+          image: ghcr.io/ammbra/helidon-examples-todo-cassandra:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9042

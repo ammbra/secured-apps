@@ -1,0 +1,53 @@
+
+server:
+  port: 8854
+  tls:
+    private-key:
+      keystore:
+        key:
+          alias: "server"
+          passphrase: "server_password"
+        resource.resource-path: "tls/server/server.keystore"
+        type: "JKS"
+        passphrase: "server_password"
+      truststore:
+        resource.resource-path: "tls/client/client.truststore"
+        type: "PKCS12"
+        passphrase: "client_password"
+
+tracing:
+  service: "todo:back"
+  host: "zipkin"
+cassandra:
+  port: 9042
+  servers:
+    - host: localhost
+
+security:
+  config:
+    require-encryption: true
+    rsa:
+      keystore:
+        # load from classpath
+        resource.resource-path: "tls/server/server.keystore"
+        # If keystore is used, alias to use from the keystore (in this example, it is "server")
+        key.alias: "server"
+        # Password of keystore
+        passphrase: "server_password"
+  providers:
+    - http-basic-auth:
+        users:
+          - login: "alice"
+            password: "zWtO/bIMJWdJLP0iNLSci4+E1X+6a52e3mqpbvB14qo="
+            roles: [ "user", "admin" ]
+          - login: "bob"
+            password: "zWtO/bIMJWdJLP0iNLSci4+E1X+6a52e3mqpbvB14qo="
+            roles: [ "user" ]
+  web-server:
+    # Configuration of integration with web server
+    defaults:
+      authenticate: true
+    paths:
+      - path: "/api/backend[/{*}]"
+        methods: ["post", "put", "delete"]
+        roles-allowed: [ "user" ]

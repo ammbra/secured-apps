@@ -1,0 +1,47 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: backend-crt
+spec:
+  # Secret names are always required.
+  secretName: backend-tls
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - some organization
+  # The use of the common name field has been deprecated since 2000 and is
+  # discouraged from being used.
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 3072
+  usages:
+    - server auth
+    - client auth
+  # At least one of a DNS Name, URI, or IP address is required. Replace this with your valid DNS name
+  dnsNames:
+    - 'client.mycompany.com'
+    - 'server.mycompany.com'
+  # Issuer references are always required.
+  issuerRef:
+    name: ca-issuer
+    # We can reference ClusterIssuers by changing the kind here.
+    # The default value is Issuer (i.e. a locally namespaced Issuer)
+    kind: Issuer
+    # This is optional since cert-manager will default to this value however
+    # if you are using an external issuer, change this to that issuer group.
+    group: cert-manager.io
+  keystores:
+    jks:
+      create: true
+      passwordSecretRef: # Password used to encrypt the keystore
+        key: password
+        name: back-jks-password-secret
+    pkcs12:
+      create: true
+      passwordSecretRef: # Password used to encrypt the keystore
+        key: password-key
+        name: back-pkcs12-password-secret
+

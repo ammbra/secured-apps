@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.helidon.examples.todos</groupId>
+    <artifactId>backend</artifactId>
+    <name>Modified Helidon Examples TODO Demo Backend</name>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <description>
+        Back-end part of the application uses Helidon MP
+    </description>
+
+    <properties>
+        <mainClass>io.helidon.demo.todos.Main</mainClass>
+        <cassandra-driver-core.version>3.10.2</cassandra-driver-core.version>
+        <version.codahale.metrics.core>3.0.2</version.codahale.metrics.core>
+
+        <helidon.version>4.0.0-ALPHA2</helidon.version>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
+        <maven.compiler.release>${maven.compiler.source}</maven.compiler.release>
+
+        <mainClass>io.helidon.demo.todos.Main</mainClass>
+        <exec.mainClass>${mainClass}</exec.mainClass>
+
+        <!-- plugin versions -->
+        <version.plugin.compiler>3.8.1</version.plugin.compiler>
+        <version.plugin.dependency>3.0.0</version.plugin.dependency>
+        <version.plugin.exec>1.6.0</version.plugin.exec>
+        <version.plugin.failsafe>3.0.0-M5</version.plugin.failsafe>
+        <version.plugin.helidon>2.2.3</version.plugin.helidon>
+        <version.plugin.helidon-cli>2.2.3</version.plugin.helidon-cli>
+        <version.plugin.jar>3.0.2</version.plugin.jar>
+        <version.plugin.os>1.5.0.Final</version.plugin.os>
+        <version.plugin.resources>2.7</version.plugin.resources>
+        <version.plugin.surefire>3.0.0-M5</version.plugin.surefire>
+        <jakarta.json.version>2.0.1</jakarta.json.version>
+        <jakarta.enterprise.cdi-api.version>3.0.0</jakarta.enterprise.cdi-api.version>
+        <dekorate-annotations.version>3.5.0</dekorate-annotations.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra-driver-core.version}</version>
+                <optional>true</optional>
+            </dependency>
+            <!--
+  Dependency management of Helidon and its third party dependencies.
+  If you want to manage all third party dependencies, switch the artifact id to helidon-bom instead.
+  -->
+            <dependency>
+                <groupId>io.helidon</groupId>
+                <artifactId>helidon-dependencies</artifactId>
+                <version>${helidon.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.helidon.nima.webserver</groupId>
+            <artifactId>helidon-nima-webserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.webclient</groupId>
+            <artifactId>helidon-nima-webclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.http2</groupId>
+            <artifactId>helidon-nima-http2-webclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.http2</groupId>
+            <artifactId>helidon-nima-http2-webserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.http.media</groupId>
+            <artifactId>helidon-nima-http-media-jsonp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.observe</groupId>
+            <artifactId>helidon-nima-observe-health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.health</groupId>
+            <artifactId>helidon-health-checks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.microprofile.bundles</groupId>
+            <artifactId>helidon-microprofile</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.security.providers</groupId>
+            <artifactId>helidon-security-providers-http-auth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.bundles</groupId>
+            <artifactId>helidon-bundles-config</artifactId>
+        </dependency>
+        <!-- DataStax Cassandra -->
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
+        <!-- needed by cassandra -->
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <version>${jakarta.enterprise.cdi-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>${jakarta.json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dekorate</groupId>
+            <artifactId>kubernetes-annotations</artifactId>
+            <version>${dekorate-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dekorate</groupId>
+            <artifactId>certmanager-annotations</artifactId>
+            <version>${dekorate-annotations.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.helidon.nima.testing.junit5</groupId>
+            <artifactId>helidon-nima-testing-junit5-webserver</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.codahale.metrics</groupId>
+            <artifactId>metrics-core</artifactId>
+            <version>${version.codahale.metrics.core}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${version.plugin.compiler}</version>
+                <configuration>
+                    <compilerArgs>
+                        <compilerArg>--enable-preview</compilerArg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${version.plugin.surefire}</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <argLine>--enable-preview</argLine>
+                    <trimStackTrace>false</trimStackTrace>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${version.plugin.failsafe}</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <argLine>--enable-preview</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${version.plugin.dependency}</version>
+                <executions>
+                    <execution>
+                        <id>copy-libs</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <includeScope>runtime</includeScope>
+                            <excludeScope>test</excludeScope>
+                            <silent>true</silent>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${version.plugin.resources}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${version.plugin.jar}</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs</classpathPrefix>
+                            <mainClass>${mainClass}</mainClass>
+                            <useUniqueVersions>false</useUniqueVersions>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${version.plugin.exec}</version>
+                <configuration>
+                    <executable>java</executable>
+                    <longClasspath>true</longClasspath>
+                    <arguments>
+                        <argument>-classpath</argument>
+                        <classpath/>
+                        <argument>${mainClass}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.helidon.build-tools</groupId>
+                <artifactId>helidon-maven-plugin</artifactId>
+                <version>${version.plugin.helidon}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jboss.jandex</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.8.0</version>
+                <configuration>
+                    <from>
+                        <image>container-registry.oracle.com/java/openjdk:20.0.1-ol8-amd64</image>
+                    </from>
+                    <to>
+                        <image>ghcr.io/ammbra/backend:${project.version}</image>
+                    </to>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

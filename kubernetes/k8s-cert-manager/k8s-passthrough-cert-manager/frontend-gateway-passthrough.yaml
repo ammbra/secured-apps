@@ -4,14 +4,14 @@ metadata:
   name: frontend-gateway
 spec:
   selector:
-    istio: ingressgateway # use istio default controller
+    istio: ingressgateway
   servers:
     - port:
         number: 443
         name: https
         protocol: HTTPS
       hosts:
-        - "frontend.mycompany.com"
+        - "client.mycompany.com"
       tls:
         mode: PASSTHROUGH
 ---
@@ -21,7 +21,7 @@ metadata:
   name: frontend-vs
 spec:
   hosts:
-    - "frontend.mycompany.com"
+    - "client.mycompany.com"
   gateways:
     - frontend-gateway
   tls:

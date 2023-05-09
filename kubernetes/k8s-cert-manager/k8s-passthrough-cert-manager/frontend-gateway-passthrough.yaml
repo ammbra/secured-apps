@@ -34,4 +34,4 @@ spec:
       match:
         - port: 443
           sniHosts:
-            - "client.examplecompany.com"
+            - "client.mycompany.com"

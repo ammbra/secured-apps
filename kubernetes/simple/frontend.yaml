@@ -76,7 +76,7 @@ metadata:
   name: frontend
 spec:
   ports:
-    - name: http
+    - name: https
       port: 443
       protocol: TCP
       targetPort: 8443

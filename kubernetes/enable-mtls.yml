@@ -4,5 +4,9 @@ metadata:
   name: "default"
   namespace: "demo"
 spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: frontend
+      app: helidon-examples-todo-backend
   mtls:
     mode: PERMISSIVE

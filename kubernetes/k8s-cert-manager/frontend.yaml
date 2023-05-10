@@ -23,16 +23,12 @@ spec:
     spec:
       containers:
         - env:
-            - name: KUBERNETES_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: quarkus.http.ssl.certificate.key-store-file
+            - name: quarkus.http.ssl.certificate.key-store-password
               valueFrom:
                 secretKeyRef:
                   key: password
                   name: front-jks-password-secret
-            - name: quarkus.http.ssl.certificate.trust-store-file
+            - name: quarkus.http.ssl.certificate.trust-store-password
               valueFrom:
                 secretKeyRef:
                   key: password
